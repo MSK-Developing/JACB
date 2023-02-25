@@ -1,0 +1,4 @@
+class Config():
+    TOKEN_METHOD="DEV"
+    BOT_TOKEN=""
+    GUILD_ID=000000000000000000
