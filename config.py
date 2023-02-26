@@ -7,6 +7,8 @@ class Config():
     BOT_TOKEN=""
     # L'ID Del Server Dove il Bot sarà inserito
     GUILD_ID=000000000000000000
+    # Il Canale dove verranno Loggate le azioni
+    LOG_CHANNEL_ID=000000000000000000
 
     # <-----------------> COLORI <----------------->
     
@@ -15,8 +17,9 @@ class Config():
     #          settati in questo modo: colore_embed_successo = "rosso"
     #       - Colori Personalizzati: Sono colori in HEX: colore_embed_successo = 0xff0000
     #          Color Picker: https://g.co/kgs/5jMBgu
-    colore_embed_successo = 0000000
-    colore_embed_fallimento = 0000000
+    colore_embed_successo = 0x04ff00
+    colore_embed_fallimento = "rosso"
+    
 
     # <-----------------> MESSAGGI <----------------->
     lang = {

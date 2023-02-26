@@ -1,4 +1,5 @@
 import asyncio
+from datetime import datetime
 import os.path
 import os
 import random
@@ -6,11 +7,37 @@ import discord
 from discord import app_commands
 import string
 
-from config import Config
+from devconfig import Config
 
 intents = discord.Intents.default()
 client = discord.Client(intents=intents)
 tree = app_commands.CommandTree(client)
+
+async def transform_color_from_config(color):
+    # rosso, giallo, verde, blu
+    if type(color) is str:
+        if color == "rosso":
+            return 0xff0000
+        if color == "giallo":
+            return 0xfbff00
+        if color == "verde":
+            return 0x00ff33
+        if color == "blu":
+            return 0x0033ff
+        else:
+            return discord.Color.random()
+    if type(color) is int:
+        return color
+    else:
+        return discord.Color.random()
+
+async def log_copuon_creation(command_maker: str, code:str):
+    interaction = discord.Interaction
+    channel = client.get_channel(Config.LOG_CHANNEL_ID)
+
+    log_embed=discord.Embed(color=await transform_color_from_config(Config.colore_embed_successo))
+    log_embed.add_field(name=":bell:  ・ [ Cuopon Logs • MSK ] ・  :bell:", value=f":small_blue_diamond: Avviso: Coupon Creato\n:small_blue_diamond: Autore: {command_maker}\n:small_blue_diamond: Codice: `{code}`\n:small_blue_diamond: Data e Ora: `{datetime.now().strftime('%d/%m/%Y, %H:%M:%S')}`", inline=False)
+    await channel.send(embed=log_embed)
 
 async def create_coupon(discount: str):
     chars = string.ascii_uppercase + str(string.digits)
@@ -70,6 +97,9 @@ async def on_ready():
 async def gen_coupon(interaction: discord.Interaction, discount: int):
     code = await create_coupon(discount)
     await append_coupun(code)
+    
+    await log_copuon_creation(interaction.user.mention, code)
+
     embed=discord.Embed(color=0x04ff00)
     embed.add_field(name=Config.lang['GEN_COUPON_EMBED_TITLE'], value=f"Code: {code}", inline=True)
     await interaction.response.send_message(embed=embed)
@@ -88,11 +118,11 @@ async def deleate_coupon(interaction: discord.Interaction, code: str):
     if state:
         await mark_as_used(code)
     
-        embed=discord.Embed(color=0x04ff00)
+        embed=discord.Embed(color=await transform_color_from_config(Config.colore_embed_successo))
         embed.add_field(name=Config.lang['USE_COUPON_COMMAND_SUCCESS_EMBED_TITLE'], value=f"Code Used: {code}\nDiscount Applied: {await get_discount(code)}%", inline=True)
         await interaction.response.send_message(embed=embed)
     else:
-        embed=discord.Embed(color=0xff0000)
+        embed=discord.Embed(color=await transform_color_from_config(Config.colore_embed_fallimento))
         embed.add_field(name=Config.lang['USE_COUPON_COMMAND_FAILED_EMBED_TITLE'], value="Sorry :(", inline=True)
         await interaction.response.send_message(embed=embed)
 
@@ -100,16 +130,13 @@ async def deleate_coupon(interaction: discord.Interaction, code: str):
 async def check_coupon(interaction: discord.Interaction, code: str):
     state = await check_cuopon_code(code)
     if state:
-        embed=discord.Embed(color=0x04ff00)
+        embed=discord.Embed(color=await transform_color_from_config(Config.colore_embed_successo))
         embed.add_field(name=Config.lang['CHECK_COUPON_COMMAND_SUCCESS_EMBED_TITLE'], value=Config.lang['CHECK_COUPON_COMMAND_SUCCESS_EMBED_DESCRIPTION'], inline=True)
         await interaction.response.send_message(embed=embed)
     else:
-        embed=discord.Embed(color=0xff0000)
+        embed=discord.Embed(color=await transform_color_from_config(Config.colore_embed_fallimento))
         embed.add_field(name=Config.lang['CHECK_COUPON_COMMAND_FAILED_EMBED_TITLE'], value=Config.lang['CHECK_COUPON_COMMAND_FAILED_EMBED_DESCRIPTION'], inline=True)
         await interaction.response.send_message(embed=embed)
 
-if Config.TOKEN_METHOD == "DEV":
-    token = asyncio.run(get_dev_token())
-else:
-    token = Config.BOT_TOKEN
-client.run(token)
+
+client.run(Config.BOT_TOKEN)
