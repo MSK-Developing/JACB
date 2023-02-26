@@ -3,10 +3,7 @@ import os.path
 import os
 import random
 import discord
-from discord import Embed, InteractionResponded, app_commands
-from discord.ui import Button, View
-from typing import Literal
-from discord.utils import get
+from discord import app_commands
 import string
 
 from config import Config
@@ -64,27 +61,27 @@ async def get_dev_token():
     
 @client.event
 async def on_ready():
-    print(f"Cupon Bot Loaded!\nLogged as {client.user.name}#{client.user.discriminator}\nGuild: {Config.GUILD_ID}")
+    print(f"Coupon Bot Loaded!\nLogged as {client.user.name}#{client.user.discriminator}\nGuild: {Config.GUILD_ID}")
     print("Syncking commands")
     await tree.sync(guild=discord.Object(id=Config.GUILD_ID))
     await create_coupons_folder()
 
-@tree.command(name="gen_coupon", description="Generates a Coupon with a given discount", guild=discord.Object(id=Config.GUILD_ID))
+@tree.command(name="gen_coupon", description=Config.lang['GEN_COUPON_COMMAND_DESCRIPTION'], guild=discord.Object(id=Config.GUILD_ID))
 async def gen_coupon(interaction: discord.Interaction, discount: int):
     code = await create_coupon(discount)
     await append_coupun(code)
     embed=discord.Embed(color=0x04ff00)
-    embed.add_field(name="Coupon Created!", value=f"Code: {code}", inline=True)
+    embed.add_field(name=Config.lang['GEN_COUPON_EMBED_TITLE'], value=f"Code: {code}", inline=True)
     await interaction.response.send_message(embed=embed)
 
-@tree.command(name="deleate_coupon", description="Checks a Coupon with a given discount", guild=discord.Object(id=Config.GUILD_ID))
+@tree.command(name="delete_coupon", description=Config.lang['DELETE_COUPON_COMMAND_DESCRIPTION'], guild=discord.Object(id=Config.GUILD_ID))
 async def deleate_coupon(interaction: discord.Interaction, code: str):
     await mark_as_used(code)
     embed=discord.Embed(color=0x04ff00)
-    embed.add_field(name="Coupon Deleated!", value=f"Code: {code}", inline=True)
+    embed.add_field(name=Config.lang['DELETE_COUPON_EMBED_TITLE'], value=f"Code: {code}", inline=True)
     await interaction.response.send_message(embed=embed)
 
-@tree.command(name="use_coupon", description="Checks a Coupon with a given discount", guild=discord.Object(id=Config.GUILD_ID))
+@tree.command(name="use_coupon", description=Config.lang['USE_COUPON_COMMAND_DESCTRIPTION'], guild=discord.Object(id=Config.GUILD_ID))
 async def deleate_coupon(interaction: discord.Interaction, code: str):
     state = await check_cuopon_code(code)
 
@@ -92,26 +89,26 @@ async def deleate_coupon(interaction: discord.Interaction, code: str):
         await mark_as_used(code)
     
         embed=discord.Embed(color=0x04ff00)
-        embed.add_field(name="Coupon Used Succefluly!", value=f"Code Used: {code}\nDiscount Applied: {await get_discount(code)}%", inline=True)
+        embed.add_field(name=Config.lang['USE_COUPON_COMMAND_SUCCESS_EMBED_TITLE'], value=f"Code Used: {code}\nDiscount Applied: {await get_discount(code)}%", inline=True)
         await interaction.response.send_message(embed=embed)
     else:
         embed=discord.Embed(color=0xff0000)
-        embed.add_field(name="This cuopun is Invalid!", value="Sorry :(", inline=True)
+        embed.add_field(name=Config.lang['USE_COUPON_COMMAND_FAILED_EMBED_TITLE'], value="Sorry :(", inline=True)
         await interaction.response.send_message(embed=embed)
 
-@tree.command(name="check_coupon", description="Checks a Coupon with a given discount", guild=discord.Object(id=Config.GUILD_ID))
+@tree.command(name="check_coupon", description=Config.lang['CHECK_COUPON_COMMAND_DESCRIPTION'], guild=discord.Object(id=Config.GUILD_ID))
 async def check_coupon(interaction: discord.Interaction, code: str):
     state = await check_cuopon_code(code)
     if state:
         embed=discord.Embed(color=0x04ff00)
-        embed.add_field(name="Coupon Exist!", value=f":ok_hand: :man_police_officer: Yay :)", inline=True)
+        embed.add_field(name=Config.lang['CHECK_COUPON_COMMAND_SUCCESS_EMBED_TITLE'], value=Config.lang['CHECK_COUPON_COMMAND_SUCCESS_EMBED_DESCRIPTION'], inline=True)
         await interaction.response.send_message(embed=embed)
     else:
         embed=discord.Embed(color=0xff0000)
-        embed.add_field(name="This cuopun is FAKE!", value=":punch: :police_car: Not cool :(", inline=True)
+        embed.add_field(name=Config.lang['CHECK_COUPON_COMMAND_FAILED_EMBED_TITLE'], value=Config.lang['CHECK_COUPON_COMMAND_FAILED_EMBED_DESCRIPTION'], inline=True)
         await interaction.response.send_message(embed=embed)
 
-if Config.TOKEN_METHOD == "DEV ":
+if Config.TOKEN_METHOD == "DEV":
     token = asyncio.run(get_dev_token())
 else:
     token = Config.BOT_TOKEN
