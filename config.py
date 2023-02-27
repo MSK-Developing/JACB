@@ -4,11 +4,11 @@ class Config():
     # Settare a nullo (o tutto il resto) per caricare il token dal Config
     TOKEN_METHOD="DEV"
     # Il token del bot
-    BOT_TOKEN=""
+    BOT_TOKEN="MTA3ODc2NTM0MTI0MjU2ODc1NQ.GhGKcN.dikh8xHryKeEWqQ8Sv81TTxdqdrkfgr6vi6ve4"
     # L'ID Del Server Dove il Bot sarà inserito
-    GUILD_ID=000000000000000000
+    GUILD_ID=869234921342906388
     # Il Canale dove verranno Loggate le azioni
-    LOG_CHANNEL_ID=000000000000000000
+    LOG_CHANNEL_ID=1079383214424064120
 
     # <-----------------> COLORI <----------------->
     
@@ -19,7 +19,13 @@ class Config():
     #          Color Picker: https://g.co/kgs/5jMBgu
     colore_embed_successo = 0x04ff00
     colore_embed_fallimento = "rosso"
-    
+
+    # <-----------------> PRESENCE <----------------->
+    class Presence():
+        # Può essere: "Playing", "Listening", "Watching"
+        type = "Watching"
+        # Il testo da mostrare
+        text = "Discounts!"
 
     # <-----------------> MESSAGGI <----------------->
     lang = {
@@ -34,5 +40,7 @@ class Config():
         "CHECK_COUPON_COMMAND_SUCCESS_EMBED_TITLE": "Coupon Exist!",
         "CHECK_COUPON_COMMAND_FAILED_EMBED_TITLE": "This cuopun is FAKE!",
         "CHECK_COUPON_COMMAND_SUCCESS_EMBED_DESCRIPTION": ":ok_hand: :man_police_officer: Yay :)",
-        "CHECK_COUPON_COMMAND_FAILED_EMBED_DESCRIPTION": ":punch: :police_car: Not cool :("
+        "CHECK_COUPON_COMMAND_FAILED_EMBED_DESCRIPTION": ":punch: :police_car: Not cool :(",
+        "LIST_COUPON_COMMAND_DESCRIPTION": "Give you a list of all the created Coupons!",
+        "LIST_COUPON_EMBED_TITLE": "Here you are ;)"
     }

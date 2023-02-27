@@ -50,6 +50,15 @@ async def get_discount(code):
     new = code[code_leght - 2:]
     return new
 
+async def get_all_codes():
+    with open('data\coupons.txt', 'r') as cfile:
+        #content = cfile.read()
+        #return content
+        codes = []
+        for line in cfile:
+            codes.append(line.rstrip())
+        return '\n'.join(codes)
+
 async def check_cuopon_code(code: str):
     with open('data\coupons.txt', 'r') as cfile:
         content = cfile.read()
@@ -79,19 +88,36 @@ async def create_coupons_folder():
     else:
         os.mkdir('data')
         with open('data/coupons.txt', 'w') as f:
+            f.write('\n')
             f.close()
 
 async def get_dev_token():
     with open('token', 'r') as token_file:
         token = token_file.read()
         return token
-    
+
+async def start_rich_presence(type:str, text:str):
+    try:
+        if type == "Watching":
+            await client.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name=text))
+        if type == "Playing":
+            await client.change_presence(activity=discord.Activity(type=discord.ActivityType.playing, name=text))
+        if type == "Listening":
+            await client.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name=text))
+        else:
+            #print('Invalid RichPresence type, must be: "Playing", "Listening", "Watching"')
+            pass
+    except Exception as e:
+        print(f'Impossibile avviare la RPresence: {e}')
+
 @client.event
 async def on_ready():
     print(f"Coupon Bot Loaded!\nLogged as {client.user.name}#{client.user.discriminator}\nGuild: {Config.GUILD_ID}")
     print("Syncking commands")
     await tree.sync(guild=discord.Object(id=Config.GUILD_ID))
     await create_coupons_folder()
+    await start_rich_presence(Config.Presence.type, Config.Presence.text)
+    
 
 @tree.command(name="gen_coupon", description=Config.lang['GEN_COUPON_COMMAND_DESCRIPTION'], guild=discord.Object(id=Config.GUILD_ID))
 async def gen_coupon(interaction: discord.Interaction, discount: int):
@@ -102,14 +128,14 @@ async def gen_coupon(interaction: discord.Interaction, discount: int):
 
     embed=discord.Embed(color=0x04ff00)
     embed.add_field(name=Config.lang['GEN_COUPON_EMBED_TITLE'], value=f"Code: {code}", inline=True)
-    await interaction.response.send_message(embed=embed)
+    await interaction.response.send_message(embed=embed, ephemeral=True)
 
 @tree.command(name="delete_coupon", description=Config.lang['DELETE_COUPON_COMMAND_DESCRIPTION'], guild=discord.Object(id=Config.GUILD_ID))
 async def deleate_coupon(interaction: discord.Interaction, code: str):
     await mark_as_used(code)
     embed=discord.Embed(color=0x04ff00)
     embed.add_field(name=Config.lang['DELETE_COUPON_EMBED_TITLE'], value=f"Code: {code}", inline=True)
-    await interaction.response.send_message(embed=embed)
+    await interaction.response.send_message(embed=embed, ephemeral=True)
 
 @tree.command(name="use_coupon", description=Config.lang['USE_COUPON_COMMAND_DESCTRIPTION'], guild=discord.Object(id=Config.GUILD_ID))
 async def deleate_coupon(interaction: discord.Interaction, code: str):
@@ -136,7 +162,12 @@ async def check_coupon(interaction: discord.Interaction, code: str):
     else:
         embed=discord.Embed(color=await transform_color_from_config(Config.colore_embed_fallimento))
         embed.add_field(name=Config.lang['CHECK_COUPON_COMMAND_FAILED_EMBED_TITLE'], value=Config.lang['CHECK_COUPON_COMMAND_FAILED_EMBED_DESCRIPTION'], inline=True)
-        await interaction.response.send_message(embed=embed)
+        await interaction.response.send_message(embed=embed, ephemeral=True)
 
+@tree.command(name="list_coupon", description=Config.lang['LIST_COUPON_COMMAND_DESCRIPTION'], guild=discord.Object(id=Config.GUILD_ID))
+async def list_coupon(interaction: discord.Interaction):
+    embed=discord.Embed(color=await transform_color_from_config(Config.colore_embed_successo))
+    embed.add_field(name=Config.lang['LIST_COUPON_EMBED_TITLE'], value=f"```{await get_all_codes()}```", inline=True)
+    await interaction.response.send_message(embed=embed, ephemeral=True)
 
 client.run(Config.BOT_TOKEN)
