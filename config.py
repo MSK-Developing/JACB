@@ -4,7 +4,7 @@ class Config():
     # Settare a nullo (o tutto il resto) per caricare il token dal Config
     TOKEN_METHOD="DEV"
     # Il token del bot
-    BOT_TOKEN="MTA3ODc2NTM0MTI0MjU2ODc1NQ.GhGKcN.dikh8xHryKeEWqQ8Sv81TTxdqdrkfgr6vi6ve4"
+    BOT_TOKEN=""
     # L'ID Del Server Dove il Bot sarà inserito
     GUILD_ID=869234921342906388
     # Il Canale dove verranno Loggate le azioni
