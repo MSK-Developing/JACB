@@ -6,9 +6,9 @@ class Config():
     # Il token del bot
     BOT_TOKEN=""
     # L'ID Del Server Dove il Bot sarà inserito
-    GUILD_ID=869234921342906388
+    GUILD_ID=0000000000000000000
     # Il Canale dove verranno Loggate le azioni
-    LOG_CHANNEL_ID=1079383214424064120
+    LOG_CHANNEL_ID=0000000000000000000
 
     # <-----------------> COLORI <----------------->
     
