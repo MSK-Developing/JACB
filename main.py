@@ -16,7 +16,7 @@ tree = app_commands.CommandTree(client)
 async def transform_color_from_config(color):
     # rosso, giallo, verde, blu
     if type(color) is str:
-        if color.lowr() == "rosso":
+        if color.lower() == "rosso":
             return 0xff0000
         if color.lower() == "giallo":
             return 0xfbff00
