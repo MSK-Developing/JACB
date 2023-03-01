@@ -16,13 +16,13 @@ tree = app_commands.CommandTree(client)
 async def transform_color_from_config(color):
     # rosso, giallo, verde, blu
     if type(color) is str:
-        if color == "rosso":
+        if color.lower() == "rosso":
             return 0xff0000
-        if color == "giallo":
+        if color.lower() == "giallo":
             return 0xfbff00
-        if color == "verde":
+        if color.lower() == "verde":
             return 0x00ff33
-        if color == "blu":
+        if color.lower() == "blu":
             return 0x0033ff
         else:
             return discord.Color.random()
@@ -45,7 +45,6 @@ async def create_coupon(discount: str):
     return code
 
 async def get_discount(code):
-    
     code_leght = len(code)
     new = code[code_leght - 2:]
     return new
