@@ -13,7 +13,7 @@ This Discord bot was created to generate personalized coupons for server users. 
 ## Commands
 
 The bot uses slash command (`/`) for all of its commands.
-- `/help`: Shows an help message (will be added in the next Update, so maybe tomorrow)
+- `/help`: Shows an help message
 
 - `/gen_coupon <discount>`: Generate a new coupon with the specified discount.
 
