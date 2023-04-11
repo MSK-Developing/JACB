@@ -1,4 +1,4 @@
-import asyncio
+from base64 import b64decode
 from datetime import datetime
 import os.path
 import os
@@ -6,8 +6,9 @@ import random
 import discord
 from discord import app_commands
 import string
+import sys
 
-from config import Config
+from devconfig import Config
 
 intents = discord.Intents.default()
 client = discord.Client(intents=intents)
@@ -32,7 +33,6 @@ async def transform_color_from_config(color):
         return discord.Color.random()
 
 async def log_copuon_creation(command_maker: str, code:str):
-    interaction = discord.Interaction
     channel = client.get_channel(Config.LOG_CHANNEL_ID)
 
     log_embed=discord.Embed(color=await transform_color_from_config(Config.colore_embed_successo))
@@ -76,6 +76,9 @@ async def mark_as_used(code: str):
             if line.strip("\n") != code:
                 cfile.write(line)
 
+#please dont tuoch it
+license_key = "dWdnY2Y6Ly9ncmFiZS5wYnovaXZyai95bGJhLXlsYmFqdHMtem55bmdndm4tenJ6ci12Z25wdXYtaHB1dnVuLXR2cy0yNjMwNjc5MQ==="
+
 async def append_coupun(coupun):
     with open('data\coupons.txt', 'a') as cfile:
         cfile.write(coupun + "\n")
@@ -83,12 +86,16 @@ async def append_coupun(coupun):
 
 async def create_coupons_folder():
     if os.path.exists('data/coupons.txt'):
-        print("Exsist")
+        # return True wonder why not work :(
+        print('Data Directory status: OK')
     else:
+        print('Data Directory status: NOT FOUND - Creating it for you!')
         os.mkdir('data')
         with open('data/coupons.txt', 'w') as f:
             f.write('\n')
             f.close()
+        
+        #return False
 
 async def get_dev_token():
     with open('token', 'r') as token_file:
@@ -111,14 +118,18 @@ async def start_rich_presence(type:str, text:str):
 
 @client.event
 async def on_ready():
-    print(f"Coupon Bot Loaded!\nLogged as {client.user.name}#{client.user.discriminator}\nGuild: {Config.GUILD_ID}")
-    print("Syncking commands")
+    print(                                                                                                                                                                                                                                                                                                                                                                   f"@@@@@@@@@@@@@@@G. ^5@@@@@@@@@@@@@@@@@@@@\n@@@@@@@@@@@@@@&:    ^5&@@@@@@@@@@@@@@@@@\n@@@@@@@@@@@@@@#       :Y&@@@@@@@@@@@@@@@\n@@@@@@@@@@@@@@@5:       :J&@@@@@@@@@@@@@\n@@@@@@@@@@@@&@@@&5^       .J#@@@@@@@@@@@\n@@@@@@@@@&     @@@@P^       .?#@@@@@@@@@\n@@@@@@@        #@@@@@P~       .7B@@@@@@@\n@@@@@           @@@@@@@G!        7B@@@@@\n@@@            @@@@@@@@@@B7        !G@@@\n@#           @@@&###@@@@@@@B?.       ~G@\nB7!7777!?G&@@@G!:...^J#@@@@@@#?.       5\n?777777Y@@@@@@J       .?B@@@@@@G       :\nJ777777Y@@@@@@@B7        !P@@@@#.      :\n#J777777JB@@@@@@@B7        ^YB5:      .G\n@@GJ77??7?JG&@@@@@@B7.               !#@\n@@@@GJ??????JG&@@@@@@#?.           ^P@@@\n@@@@@@BY??????JP&@@@@@@#J:       :5@@@@@\n@@@@@@@@BY??JJJ?JP#@@@@@@&Y^   ^5&@@@@@@\n@@@@@@@@@@B5JJJJJJJP#@@@@@@@GJG@@@@@@@@@\n@@@@@@@@@@@@#5JJJJJJJ5#@@@@@@@@@@@@@@@@@\n@@@@@@@@@@@@@@#PYJYYYJYP&@@@@@@@@@@@@@@@\n@@@@@@@@@@@@@@@@&PYYYYYY5@@@@@@@@@@@@@@@\n@@@@@@@@@@@@@@@@@@&G5YYY#@@@@@@@@@@@@@@@\n@@@@@@@@@@@@@@@@@@@@&G5B@@@@@@@@@@@@@@@@\n\nCoupon Bot by MSK • Developig Loaded!\nLogged as {client.user.name}#{client.user.discriminator}\nGuild: {Config.GUILD_ID}")
+    print("Syncing commands")
     await tree.sync(guild=discord.Object(id=Config.GUILD_ID))
     await create_coupons_folder()
     await start_rich_presence(Config.Presence.type, Config.Presence.text)
+
+    #if b64decode(license_key) != Config.TOKEN_METHOD:
+    #    sys.exit(0) #please dont change it 💖 (<-- :heart:)
     
 
 @tree.command(name="gen_coupon", description=Config.lang['GEN_COUPON_COMMAND_DESCRIPTION'], guild=discord.Object(id=Config.GUILD_ID))
+@app_commands.checks.has_permissions(administrator=True)
 async def gen_coupon(interaction: discord.Interaction, discount: int):
     code = await create_coupon(discount)
     await append_coupun(code)
@@ -130,14 +141,15 @@ async def gen_coupon(interaction: discord.Interaction, discount: int):
     await interaction.response.send_message(embed=embed, ephemeral=True)
 
 @tree.command(name="delete_coupon", description=Config.lang['DELETE_COUPON_COMMAND_DESCRIPTION'], guild=discord.Object(id=Config.GUILD_ID))
-async def deleate_coupon(interaction: discord.Interaction, code: str):
+@app_commands.checks.has_permissions(administrator=True)
+async def delete_coupon(interaction: discord.Interaction, code: str):
     await mark_as_used(code)
     embed=discord.Embed(color=0x04ff00)
     embed.add_field(name=Config.lang['DELETE_COUPON_EMBED_TITLE'], value=f"Code: {code}", inline=True)
     await interaction.response.send_message(embed=embed, ephemeral=True)
 
 @tree.command(name="use_coupon", description=Config.lang['USE_COUPON_COMMAND_DESCTRIPTION'], guild=discord.Object(id=Config.GUILD_ID))
-async def deleate_coupon(interaction: discord.Interaction, code: str):
+async def use_coupon(interaction: discord.Interaction, code: str):
     state = await check_cuopon_code(code)
 
     if state:
@@ -152,6 +164,7 @@ async def deleate_coupon(interaction: discord.Interaction, code: str):
         await interaction.response.send_message(embed=embed)
 
 @tree.command(name="check_coupon", description=Config.lang['CHECK_COUPON_COMMAND_DESCRIPTION'], guild=discord.Object(id=Config.GUILD_ID))
+@app_commands.checks.has_permissions(administrator=True)
 async def check_coupon(interaction: discord.Interaction, code: str):
     state = await check_cuopon_code(code)
     if state:
@@ -164,9 +177,15 @@ async def check_coupon(interaction: discord.Interaction, code: str):
         await interaction.response.send_message(embed=embed, ephemeral=True)
 
 @tree.command(name="list_coupon", description=Config.lang['LIST_COUPON_COMMAND_DESCRIPTION'], guild=discord.Object(id=Config.GUILD_ID))
+@app_commands.checks.has_permissions(administrator=True)
 async def list_coupon(interaction: discord.Interaction):
     embed=discord.Embed(color=await transform_color_from_config(Config.colore_embed_successo))
     embed.add_field(name=Config.lang['LIST_COUPON_EMBED_TITLE'], value=f"```{await get_all_codes()}```", inline=True)
     await interaction.response.send_message(embed=embed, ephemeral=True)
+
+@tree.error
+async def on_app_command_error(interaction: discord.Interaction, error):
+    if isinstance(error, app_commands.MissingPermissions):
+        await interaction.response.send_message(f"Solo i membri con il permesso ``{''.join(error.missing_permissions)}`` possono farlo!", ephemeral=True)
 
 client.run(Config.BOT_TOKEN)
