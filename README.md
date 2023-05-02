@@ -41,3 +41,10 @@ This project is open to contributions. If you'd like to contribute, please submi
 ## License
 
 This project **may** be modified, adapted, and published by other users, **always** give credit to the *original* authors (us: *MSK Developing Team*)
+
+## Why no more updates?
+I started this project as a demo, so now that it was pushed in production, i don't know if i will be able to update it any futher.
+
+I don't think i will abandon it *completely*, so maybe expect an update once/twice a month
+
+Anyways, if you want to add any feature, create an issue here on GitHub (or message me on discord). If you want to contribute, *PLEASE* do so.
