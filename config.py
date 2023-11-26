@@ -1,9 +1,8 @@
 class Config():
     # <-----------------> OPZIONI GENERALI <----------------->
     # Opzione per caricare il token da un file ("token") o dal config.
-    # Settare a nullo (o tutto il resto) per caricare il token dal Config <------ non funzia
-    # NON CAMBIARE ALRIMENTI ESPLODE TUTTO PER FAVORE CRASHANO I SERVER AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-    TOKEN_METHOD="uggcf://grabe.pbz/ivrj/ylba-ylbajts-znynggvn-zrzr-vgnpuv-hpuvun-tvs-26306791"
+    # Settare a nullo (o tutto il resto) per caricare il token dal Config
+    TOKEN_METHOD=""
     # Il token del bot
     BOT_TOKEN=""
     # L'ID Del Server Dove il Bot sarà inserito
